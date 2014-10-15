@@ -4,8 +4,9 @@
   "description": "0.0.1",
   "main": "index.js",
   "dependencies": {
-    "underscore": "^1.7.0",
-    "colors": "~1.0.3"
+    "colors": "~1.0.3",
+    "optimist": "^0.6.1",
+    "underscore": "^1.7.0"
   },
   "devDependencies": {},
   "scripts": {

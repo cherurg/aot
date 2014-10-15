@@ -1,9 +1,13 @@
 var fs = require('fs'),
 	an = require('./mystemAnalyser')
-	colors = require('colors');
+	colors = require('colors'),
+	argv = require('optimist')
+    .usage('Usage: $0 -f [filename]')
+    .demand(['f'])
+    .argv;
 
 
-fs.readFile("text.json", "utf8", function(err, data) {
+fs.readFile(argv.f, "utf8", function(err, data) {
 	if (err) throw new Error(err);
 
 	data = JSON.parse(data);
