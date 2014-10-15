@@ -24,7 +24,7 @@ fs.readFile(argv.f, "utf8", function(err, data) {
  	report += "\n";
 	report += "\n" + "Количество уникальных лемм: ".green + an.uniqueLemmas();
 	report += "\n" + "Количество незнакомых слов: ".green + an.unknownWords();
-	report += "\n" + "Коэффициент лексического богатсва: ".green + an.lexicalRichness();
+	report += "\n" + "Коэффициент лексического богатства: ".green + an.lexicalRichness();
 
 	console.log(report);
 });
