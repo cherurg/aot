@@ -118,16 +118,29 @@ var relativeHomonymy = us.memoize(function (format) {
 var uniqueLemmas = us.memoize(function () {
 	var arr = us.chain(my.data)
 		.map(function (el) {
-			if (el.analysis && el.analysis[0]) {
+			if (el.analysis && el.analysis[0]) {	//не у каждого элемента в data есть analysis и не каждый analysis 
+				//имеет ненулевую длину
 				return el.analysis[0].lex;
 			}
 		})
 		.filter(function (el) {
-			return !!el;	
+			return !!el;	//проверяю на undefined
 		})
 		.value();
 
 	return uniqueElements(arr);
+});
+
+var unknownWords = us.memoize(function () {
+	var num = us.reduce(my.data, function (memo, el) {
+		if (el.analysis && el.analysis.length === 0) {
+			return memo + 1;
+		}
+
+		return memo;
+	}, 0);
+
+	return num;
 });
 
 exports.setData = setData;
@@ -139,3 +152,4 @@ exports.meanSentenceLength = meanSentenceLength;
 exports.absoluteHomonymy = absoluteHomonymy;
 exports.relativeHomonymy = relativeHomonymy;
 exports.uniqueLemmas = uniqueLemmas;
+exports.unknownWords = unknownWords;

@@ -18,6 +18,7 @@ fs.readFile("text.json", "utf8", function(err, data) {
 	report += "\n" + "Относительная частота омонимичных словоформ: " + an.relativeHomonymy("percent");
 	report += "\n";
 	report += "\n" + "Количество уникальных лемм: " + an.uniqueLemmas();
+	report += "\n" + "Количество незнакомых слов: " + an.unknownWords();
 
 	console.log(report.green);
 });
