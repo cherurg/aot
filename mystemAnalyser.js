@@ -143,6 +143,117 @@ var unknownWords = us.memoize(function () {
 	return num;
 });
 
+var partOfSpeechPercent = us.memoize(function () {
+	splitDataGR();
+
+	function speechPart(name) {
+		return {
+			count: 0,
+			name: name,
+			toString: function () {
+				return this.name + ": " + this.count + ", " + ((this.count/wordUsages()*10000)|0)/100 + "%";
+			}
+		}
+	}
+
+	var percents = {
+		A: speechPart("Прилагательное"),
+		ADV: speechPart("Наречие"),
+		ADVPRO: speechPart("Местоименное наречие"),
+		ANUM: speechPart("Числительное-прилагательное"),
+		APRO: speechPart("Местоимение-прилагательное"),
+		COM: speechPart("Часть композита - сложного слова"),
+		CONJ: speechPart("Союз"),
+		INTJ: speechPart("Междометие"),
+		NUM: speechPart("Числительное"),
+		PART: speechPart("Частица"),
+		PR: speechPart("Предлог"),
+		S: speechPart("Существительное"),
+		SPRO: speechPart("Местоимение-существительное"),
+		V: speechPart("Глагол"),
+		деепр: speechPart("Деепричастие"),
+		прич: speechPart("Причастие")
+	};
+
+	us.each(my.data, function (d) {
+		if (!hasAnalysisProp(d) || d.analysis.length === 0) {
+			return;
+		}	
+
+		var an = d.analysis[0].gr; //если омонимия, то берем первый вариант
+		us.each(us.keys(percents), function (partOfSpeech) {
+			if (-1 !== an.indexOf(partOfSpeech)) {
+				if (partOfSpeech !== "V") {
+					percents[partOfSpeech].count++;
+					return;
+				}
+
+				if (-1 !== an.indexOf("деепр")) {
+					percents["деепр"].count++;	
+				} else if (-1 !== an.indexOf("прич")) {
+					percents["прич"].count++;
+				} else {
+					percents["V"].count++;
+				}
+			}
+		});
+	});
+
+	var values = us.values(percents);
+	values.toString = function () {
+		var str = "";
+		us.each(values, function (val, i) {
+			str += val;
+			if (i !== values.length - 1) {
+				str += "\n";
+			}
+		});
+
+		return str;
+	}
+
+	return values;
+});
+
+function hasAnalysisProp(d) {
+	return d.analysis && us.isArray(d.analysis);	
+}
+
+function splitDataGR() {
+	if (my.splited) {
+		return;
+	}
+
+	us.each(my.data, function (el, ind) {
+		//если нет анализа или он не массив, то тут нам делать нечего.
+		if (!hasAnalysisProp(el)) {
+			return;
+		}
+
+		//разбиваем результат анализа по запятым
+		us.each(el.analysis, function (an) {
+			//убираем знак = из строки, заменяем на запятую.
+			var eqInd = an.gr.indexOf("=");
+			if (eqInd !== -1) {
+				an.gr = an.gr.slice(0, eqInd) + "," + an.gr.slice(eqInd + 1);
+			}
+
+			an.gr = an.gr.split(",");
+			//удаляем пустые элементы
+			an.gr = us.filter(an.gr, function (symb) {
+				return symb !== '';
+			});	
+		});
+	});
+
+	//чтобы не делать работу несколько раз.
+	my.splited = true;
+}
+
+var lexicalRichness = us.memoize(function () {
+	return uniqueLemmas()/wordUsages();
+});
+
 exports.setData = setData;
 exports.getData = getData;
 exports.wordUsages = wordUsages;
@@ -153,3 +264,5 @@ exports.absoluteHomonymy = absoluteHomonymy;
 exports.relativeHomonymy = relativeHomonymy;
 exports.uniqueLemmas = uniqueLemmas;
 exports.unknownWords = unknownWords;
+exports.partOfSpeechPercent = partOfSpeechPercent;
+exports.lexicalRichness = lexicalRichness;

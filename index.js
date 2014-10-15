@@ -9,16 +9,18 @@ fs.readFile("text.json", "utf8", function(err, data) {
 	data = JSON.parse(data);
 	an.setData(data.o);
 
-	var report = "Общее число словоупотреблений: " + an.wordUsages();
-	report += "\n" + "Количество предложений: " + an.sentences();
-	report += "\n" + "Количество различных словоформ: " + an.wordforms();
-	report += "\n" + "Средняя длина предложения: " + an.meanSentenceLength();
+	var report = "Общее число словоупотреблений: ".green + an.wordUsages();
+	report += "\n" + "Количество предложений: ".green + an.sentences();
+	report += "\n" + "Количество различных словоформ: ".green + an.wordforms();
+	report += "\n" + "Средняя длина предложения: ".green + an.meanSentenceLength();
 	report += "\n";
-	report += "\n" + "Абсолютная частота омонимичных словоформ: " + an.absoluteHomonymy();
-	report += "\n" + "Относительная частота омонимичных словоформ: " + an.relativeHomonymy("percent");
-	report += "\n";
-	report += "\n" + "Количество уникальных лемм: " + an.uniqueLemmas();
-	report += "\n" + "Количество незнакомых слов: " + an.unknownWords();
+	report += "\n" + "Абсолютная частота омонимичных словоформ: ".green + an.absoluteHomonymy();
+	report += "\n" + "Относительная частота омонимичных словоформ: ".green + an.relativeHomonymy("percent");
+	report += "\n" + "Количество слов разных частей речи:\n".green + an.partOfSpeechPercent();
+ 	report += "\n";
+	report += "\n" + "Количество уникальных лемм: ".green + an.uniqueLemmas();
+	report += "\n" + "Количество незнакомых слов: ".green + an.unknownWords();
+	report += "\n" + "Коэффициент лексического богатсва: ".green + an.lexicalRichness();
 
-	console.log(report.green);
+	console.log(report);
 });
