@@ -61,16 +61,21 @@ var sentences = us.memoize(function () {
 	return my.sentencesCounter;
 });
 
-var wordforms = us.memoize(function () {
-
-	var wordformsSet = {};
-	us.each(my.data, function (el) {
-		wordformsSet[el.text] = true;
+function uniqueElements(arr) {
+	var set = {};
+	us.each(arr, function (el) {
+		set[el] = true;
 	});
 
-	my.wordforms = us.size(wordformsSet);
+	return us.size(set);	
+}
 
-	return my.wordforms;
+var wordforms = us.memoize(function () {
+	var arr = us.map(my.data, function (el) {
+		return el.text;
+	});
+
+	return uniqueElements(arr);
 });
 
 var meanSentenceLength = us.memoize(function () {
@@ -101,13 +106,28 @@ var absoluteHomonymy = us.memoize(function () {
 });
 
 var relativeHomonymy = us.memoize(function (format) {
-	var frequency = absoluteHomonymy() / wordUsages();
+	var frequency = absoluteHomonymy() / wordforms();
 
 	if (format === "percent") {
-		frequency = Math.floor(frequency * 10000) / 100 + "%";
+		frequency = ((frequency * 10000)|0)/ 100 + "%";
 	}
 
 	return frequency;
+});
+
+var uniqueLemmas = us.memoize(function () {
+	var arr = us.chain(my.data)
+		.map(function (el) {
+			if (el.analysis && el.analysis[0]) {
+				return el.analysis[0].lex;
+			}
+		})
+		.filter(function (el) {
+			return !!el;	
+		})
+		.value();
+
+	return uniqueElements(arr);
 });
 
 exports.setData = setData;
@@ -118,3 +138,4 @@ exports.wordforms = wordforms;
 exports.meanSentenceLength = meanSentenceLength;
 exports.absoluteHomonymy = absoluteHomonymy;
 exports.relativeHomonymy = relativeHomonymy;
+exports.uniqueLemmas = uniqueLemmas;
